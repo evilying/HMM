@@ -15,11 +15,28 @@ line = contents.readline()
 print(line)
 tokens = remove_punctuation(line.rstrip().lower()).split()
 n_gram = 1
-word_grams = {}
-for i in range(len(tokens)-n_gram):
+ntokens = len(tokens)
+for i in range(ntokens):
 
-    gram = ' '.join(tokens[i: i + n_gram])
-    if gram not in word_grams.keys():
-        word_grams[gram] = []
-    word_grams[gram].append(tokens[i + n_gram])
-print(word_grams)
+    current_token = tokens[i]
+    if i == 0:
+        initial[current_token] = initial.get(current_token, 0) + 1
+    elif i == ntokens-1:
+        add2dict(transitions, current_token, 'END')
+        pass
+    else:
+        key_token = ' '.join(tokens[i: i + n_gram])
+        if key_token not in transitions.keys():
+            transitions[key_token] = []
+        transitions[key_token].append(tokens[i + n_gram])
+
+initial_total = sum(initial.values())
+for token, count in initial.items():
+
+        initial[token] = count / initial_total
+
+for token, wlist in transitions.items():
+
+        transitions[token] = list2pdf(wlist)
+
+print(transitions)
