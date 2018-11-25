@@ -14,12 +14,25 @@ corpus = pd.read_csv(filename)
 label = 'religion'
 field_corpus = corpus[corpus['label'] == label]
 tag_dict = {}
+word_dict = {}
 
 raw_text = get_field(field_corpus, 'raw_text')
-tag_dict = gen_tag_dict(tag_dict, raw_text)
-tokenized_pos = get_field(field_corpus, 'tokenized_pos')
+gen_tag_dict(tag_dict, word_dict, raw_text)
 
-transitions_pos, initial = gen_transition(tokenized_pos, n_gram)
+tokenized_pos = get_field(field_corpus, 'tokenized_pos')
+transitions_pos, initial_pos = gen_transition(tokenized_pos, n_gram)
+
+tokenized_word = get_field(field_corpus, 'tokenized_text')
+transitions_word, initial_word = gen_transition(tokenized_word, n_gram)
+# print(transitions_word)
+word = 'human'
+if word in word_dict.keys():
+    print('word "', word, '" is in the dictionay.')
+
+print(transitions_word[word])
+print(tag_dict['at'])
+print(set(transitions_word[word].keys()) & tag_dict['at'])
+
 tag_seq = ['wql', 'jj', 'at', 'nn', '.']
 
 for tag in tag_seq:
