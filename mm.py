@@ -1,7 +1,7 @@
 import numpy as np
 from utility import add2dict, list2pdf, \
     sample_word, remove_punctuation, viterbi, \
-    print_optimal_seq
+    print_optimal_seq, search_max_len
 import string
 import matplotlib.pyplot as pl
 
@@ -76,30 +76,34 @@ for i in range(len_path):
     i += 1
     P_pow[i, :, :] = np.matmul(P_pow[i-1, :, :], P)
 
-end_word = 'better'
-steps_candid = np.zeros((nwords, len_path+1))
-print(steps_candid.shape)
-end_code = word_encode[end_word]
-nwords_initial = len(initial.keys())
-step_initial = {}
-for ini_word in initial.keys():
+end_word = 'END'
+len_ini, word_ini, prob, steps_dict = \
+        search_max_len(initial, end_word, P_pow, len_path, word_encode)
+print(len_ini, word_ini, prob)
+# steps_candid = np.zeros((nwords, len_path+1))
+# print(steps_candid.shape)
+# end_code = word_encode[end_word]
+# nwords_initial = len(initial.keys())
+# step_initial = {}
+# for ini_word in initial.keys():
+#
+#     ini_code = word_encode[ini_word]
+#     for i in range(len_path+1):
+#
+#         access = P_pow[i, ini_code, end_code]
+#         steps_candid[ini_code, i] = access
+#         if access > 0:
+#             dict = {}
+#             dict['len'] = i + 1
+#             dict['prob'] = access
+#             step_initial[ini_word] = dict
+#             print(ini_word, 'length', i, ':', access)
+#             break
+# print(step_initial)
+# if end_word not in word_encode.keys():
+#     print(end_word, 'not in the dictionary.')
+# code = word_encode[end_word]
 
-    ini_code = word_encode[ini_word]
-    for i in range(len_path+1):
-
-        access = P_pow[i, ini_code, end_code]
-        steps_candid[ini_code, i] = access
-        if access > 0:
-            dict = {}
-            dict['len'] = i + 1
-            dict['prob'] = access
-            step_initial[ini_word] = dict
-            print(ini_word, 'length', i, ':', access)
-            break
-print(step_initial)
-if end_word not in word_encode.keys():
-    print(end_word, 'not in the dictionary.')
-code = word_encode[end_word]
 # for ini_word in initial.keys():
 #
 #     print(ini_word)
@@ -108,14 +112,15 @@ code = word_encode[end_word]
 #
 #         print('step', i, P_pow[i, ini_code, code])
 #
-k = 5
+k = len_ini
+print(k, nwords)
 PI = 3 * np.ones((k+1, nwords, nwords))
-u = word_encode['two']
+u = word_encode[word_ini]
 bq = -1 * np.ones_like(PI)
-v = word_encode['better']
+v = word_encode[end_word]
 prob = viterbi(PI, P, k, u, v, nwords, bq, num_decode)
 if prob > 0:
-    seq = ['better']
+    seq = [end_word]
     print_optimal_seq(seq, bq, k, u, v, num_decode)
     print(seq[::-1])
 else:

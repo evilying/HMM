@@ -3,6 +3,33 @@ import string
 import unicodedata
 import sys, random
 UPPER = 3
+def search_max_len(initial, end_word, P_pow, len_path, word_encode):
+
+    end_code = word_encode[end_word]
+    nwords_initial = len(initial.keys())
+    step_initial = {}
+    word_ini_best = ''
+    len_ini_min = 0
+    prob_ini_max = 0
+    for ini_word in initial.keys():
+
+        ini_code = word_encode[ini_word]
+        for i in range(len_path+1):
+
+            access = P_pow[i, ini_code, end_code]
+            if access > 0:
+                dict = {}
+                dict['len'] = i + 1
+                dict['prob'] = access
+                step_initial[ini_word] = dict
+                if prob_ini_max < access:
+                    prob_ini_max = access
+                    len_ini_min = i + 1
+                    word_ini_best = ini_word
+                break
+    return len_ini_min, word_ini_best, prob_ini_max, step_initial
+
+
 def print_optimal_seq(seq, bq, k, u, v, num_decode):
 
     if k == 0:
