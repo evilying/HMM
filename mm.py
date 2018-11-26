@@ -1,5 +1,7 @@
 import numpy as np
-from utility import add2dict, list2pdf, sample_word, remove_punctuation
+from utility import add2dict, list2pdf, \
+    sample_word, remove_punctuation, viterbi, \
+    print_optimal_seq
 import string
 import matplotlib.pyplot as pl
 
@@ -81,6 +83,19 @@ for ini_word in initial.keys():
 
     print(ini_word)
     ini_code = word_encode[ini_word]
-    for i in range(10):
+    for i in range(5):
 
         print('step', i, P_pow[i, ini_code, code])
+
+k = 3
+PI = 3 * np.ones((k+1, nwords, nwords))
+u = word_encode['then']
+bq = -1 * np.ones_like(PI)
+v = word_encode['better']
+prob = viterbi(PI, P, k, u, v, nwords, bq, num_decode)
+if prob > 0:
+    seq = ['better']
+    print_optimal_seq(seq, bq, k, u, v, num_decode)
+    print(seq[::-1])
+else:
+    print('no')
