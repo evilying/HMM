@@ -16,7 +16,7 @@ for iline in range(10):
 
     line = contents.readline()
     tokens = remove_punctuation(line.rstrip().lower()).split()
-    # print(tokens)
+    print(tokens)
     n_gram = 1
     ntokens = len(tokens)
 
@@ -73,12 +73,14 @@ P_pow[0, :, :] = P
 for i in range(len_path):
     i += 1
     P_pow[i, :, :] = np.matmul(P_pow[i-1, :, :], P)
+word = 'better'
+if word not in word_encode.keys():
+    print(word, 'not in the dictionary.')
+code = word_encode[word]
+for ini_word in initial.keys():
 
-pl.figure(1)
-for i in range(len_path):
+    print(ini_word)
+    ini_code = word_encode[ini_word]
+    for i in range(10):
 
-    i += 1
-    pl.subplot(4, 5, i)
-    pl.imshow(P_pow[i, :, :], interpolation='nearest', cmap='hot')
-    pl.colorbar(mappable=None, cax=None, ax=None)
-pl.show()
+        print('step', i, P_pow[i, ini_code, code])
