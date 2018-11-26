@@ -75,21 +75,42 @@ P_pow[0, :, :] = P
 for i in range(len_path):
     i += 1
     P_pow[i, :, :] = np.matmul(P_pow[i-1, :, :], P)
-word = 'better'
-if word not in word_encode.keys():
-    print(word, 'not in the dictionary.')
-code = word_encode[word]
+
+end_word = 'better'
+steps_candid = np.zeros((nwords, len_path+1))
+print(steps_candid.shape)
+end_code = word_encode[end_word]
+nwords_initial = len(initial.keys())
+step_initial = {}
 for ini_word in initial.keys():
 
-    print(ini_word)
     ini_code = word_encode[ini_word]
-    for i in range(5):
+    for i in range(len_path+1):
 
-        print('step', i, P_pow[i, ini_code, code])
-
-k = 3
+        access = P_pow[i, ini_code, end_code]
+        steps_candid[ini_code, i] = access
+        if access > 0:
+            dict = {}
+            dict['len'] = i + 1
+            dict['prob'] = access
+            step_initial[ini_word] = dict
+            print(ini_word, 'length', i, ':', access)
+            break
+print(step_initial)
+if end_word not in word_encode.keys():
+    print(end_word, 'not in the dictionary.')
+code = word_encode[end_word]
+# for ini_word in initial.keys():
+#
+#     print(ini_word)
+#     ini_code = word_encode[ini_word]
+#     for i in range(5):
+#
+#         print('step', i, P_pow[i, ini_code, code])
+#
+k = 5
 PI = 3 * np.ones((k+1, nwords, nwords))
-u = word_encode['then']
+u = word_encode['two']
 bq = -1 * np.ones_like(PI)
 v = word_encode['better']
 prob = viterbi(PI, P, k, u, v, nwords, bq, num_decode)
