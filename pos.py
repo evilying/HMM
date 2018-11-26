@@ -1,9 +1,11 @@
 import numpy as np
 from utility import add2dict, list2pdf, \
     sample_word, remove_punctuation, gen_tag_dict, \
-    get_field, gen_tag_seq, gen_transition
+    get_field, gen_tag_seq, gen_transition, \
+    gen_next_max, gen_next_rand
 import string, unicodedata, random
 import pandas as pd
+import operator
 
 data_dir = './data/'
 
@@ -29,11 +31,22 @@ word = 'human'
 if word in word_dict.keys():
     print('word "', word, '" is in the dictionay.')
 
-print(transitions_word[word])
-print(tag_dict['at'])
-print(set(transitions_word[word].keys()) & tag_dict['at'])
+pos_word = list(word_dict[word])[0]
 
-tag_seq = ['wql', 'jj', 'at', 'nn', '.']
+tag_seq = []
+tag_seq.append(pos_word)
+print(pos_word)
+# stats = transitions_pos[pos_word]
+# print(max(stats, key=lambda key: stats[key]))
+
+next_pos = gen_next_max(pos_word, transitions_pos)
+while next_pos not in ['.', 'END'] :
+
+    next_pos = gen_next_rand(next_pos, transitions_pos)
+    tag_seq.append(next_pos)
+# print(set(transitions_word[word].keys()) & tag_dict['at'])
+print(tag_seq)
+# tag_seq = ['wql', 'jj', 'at', 'nn', '.']
 
 for tag in tag_seq:
 
