@@ -2,10 +2,40 @@ import numpy as np
 import string
 import unicodedata
 import sys, random
+UPPER = 3
+def print_optimal_seq(seq, bq, k, u, v, num_decode):
 
+    if k == 0:
+        return
+    w = int(bq[k, u, v])
+    seq.append(num_decode[w])
+    print_optimal_seq(seq, bq, k-1, u, w, num_decode)
 
-tbl = dict.fromkeys(i for i in range(sys.maxunicode)
-                      if unicodedata.category(chr(i)).startswith('P'))
+def viterbi(PI, P, k, u, v, nwords, bq, num_decode):
+
+    if k == 0:
+        if u == v:
+            return 1
+        else:
+            return 0
+    if PI[k, u, v] < UPPER:
+        value = PI[k, u, v]
+        return PI[k, u, v]
+    res = np.zeros(nwords)
+    w = np.zeros(nwords)
+    sent = []
+    for i in range(nwords):
+
+        w = i
+        sent.append(num_decode[w])
+        res[i] = viterbi(PI, P, k-1, u, w, nwords, bq, num_decode) * P[w, v]
+        if P[w, v] > 0 and res[i] > 0:
+            print(res[i], P[w, v])
+            print(k, num_decode[w], num_decode[v])
+    PI[k, u, v] = np.max(res)
+    w_max = np.argmax(res)
+    bq[k, u, v] = w_max
+    return np.max(res)
 
 def get_field(corpus, field):
 
@@ -37,6 +67,18 @@ def gen_transition(tokenized_corpus, n_gram):
 
     return transitions_pos, initial
 
+def gen_next_rand(word, transitions):
+
+    stats = transitions[word]
+    return sample_word(stats)
+
+def gen_next_max(word, transitions):
+
+    stats = transitions[word]
+    if '.' in stats:
+        return '.'
+
+    return max(stats, key=lambda key: stats[key])
 
 def gen_tag_seq(initial, transitions_pos):
 
@@ -51,7 +93,7 @@ def gen_tag_seq(initial, transitions_pos):
 
     return sentence
 
-def gen_tag_dict(tag_dict, text):
+def gen_tag_dict(tag_dict, word_dict, text):
 
     for i in range(len(text)):
 
@@ -64,10 +106,14 @@ def gen_tag_dict(tag_dict, text):
             if tag not in tag_dict.keys():
                 tag_dict[tag] = set()
             tag_dict[tag].add(word)
-    return tag_dict
+            if word not in word_dict.keys():
+                word_dict[word] = set()
+            word_dict[word].add(tag)
 
 def remove_punctuation(text):
 
+    tbl = dict.fromkeys(i for i in range(sys.maxunicode)
+            if unicodedata.category(chr(i)).startswith('P'))
     return text.translate(tbl)
 
 def add2dict(dict, key, value):
