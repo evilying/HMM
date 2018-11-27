@@ -15,7 +15,7 @@ transitions = {}
 filename = data_dir + 'robert_frost.txt'
 contents = open(filename, 'r', encoding = 'utf-8')
 
-for iline in range(20):
+for iline in range(10):
 
     line = contents.readline()
     tokens = remove_punctuation(line.rstrip().lower()).split()
@@ -77,12 +77,14 @@ for i in range(len_path):
     i += 1
     P_pow[i, :, :] = np.matmul(P_pow[i-1, :, :], P)
 
-current_word = 'i'
+current_word = 'END'
 opt_seq_first, prob_first = search(initial, current_word, P_pow, P, \
             len_path, word_encode, num_decode)
+
 end_word = 'END'
 initial_cur = {}
 initial_cur[current_word] = ''
+
 opt_seq_second, prob_sec = search(initial_cur, end_word, P_pow, P, \
             len_path, word_encode, num_decode)
 

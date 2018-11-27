@@ -35,7 +35,7 @@ def search_max_len(initial, end_word, P_pow, len_path, word_encode):
     end_code = word_encode[end_word]
     nwords_initial = len(initial.keys())
     step_initial = {}
-    word_ini_best = ''
+    word_ini_best = 'END'
     len_ini_min = 0
     prob_ini_max = 0
     for ini_word in initial.keys():
