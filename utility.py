@@ -3,6 +3,23 @@ import string
 import unicodedata
 import sys, random
 UPPER = 3
+def search_optimal_sent(len_ini, word_ini, \
+        end_word, P, nwords, word_encode, num_decode):
+
+    k = len_ini
+    # print(k, nwords)
+    PI = 3 * np.ones((k+1, nwords, nwords))
+    u = word_encode[word_ini]
+    bq = -1 * np.ones_like(PI)
+    v = word_encode[end_word]
+    prob = viterbi(PI, P, k, u, v, nwords, bq, num_decode)
+    if prob > 0:
+        seq = [end_word]
+        print_optimal_seq(seq, bq, k, u, v, num_decode)
+        return seq[::-1]
+    else:
+        return 'cannot compose'
+
 def search_max_len(initial, end_word, P_pow, len_path, word_encode):
 
     end_code = word_encode[end_word]
