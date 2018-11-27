@@ -3,6 +3,16 @@ import string
 import unicodedata
 import sys, random
 UPPER = 3
+def search(initial, end_word, P_pow, P, len_path, word_encode, num_decode):
+
+    nwords = len(word_encode)
+    len_ini, word_ini, prob, steps_dict = \
+        search_max_len(initial, end_word, P_pow, len_path, word_encode)
+    opt_seq = search_optimal_sent(len_ini, \
+                word_ini, end_word, P, nwords, word_encode, num_decode)
+
+    return opt_seq, prob
+
 def search_optimal_sent(len_ini, word_ini, \
         end_word, P, nwords, word_encode, num_decode):
 
@@ -18,7 +28,7 @@ def search_optimal_sent(len_ini, word_ini, \
         print_optimal_seq(seq, bq, k, u, v, num_decode)
         return seq[::-1]
     else:
-        return 'cannot compose'
+        return list('cannot compose')
 
 def search_max_len(initial, end_word, P_pow, len_path, word_encode):
 
@@ -73,9 +83,9 @@ def viterbi(PI, P, k, u, v, nwords, bq, num_decode):
         w = i
         sent.append(num_decode[w])
         res[i] = viterbi(PI, P, k-1, u, w, nwords, bq, num_decode) * P[w, v]
-        if P[w, v] > 0 and res[i] > 0:
-            print(res[i], P[w, v])
-            print(k, num_decode[w], num_decode[v])
+        # if P[w, v] > 0 and res[i] > 0:
+        #     print(res[i], P[w, v])
+        #     print(k, num_decode[w], num_decode[v])
     PI[k, u, v] = np.max(res)
     w_max = np.argmax(res)
     bq[k, u, v] = w_max
