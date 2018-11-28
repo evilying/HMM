@@ -12,10 +12,10 @@ initial = {}
 words = {}
 transitions = {}
 
-filename = data_dir + 'robert_frost.txt'
+filename = data_dir + 'highwayman.txt'
 contents = open(filename, 'r', encoding = 'utf-8')
 
-for iline in range(10):
+for iline in range(50):
 
     line = contents.readline()
     tokens = remove_punctuation(line.rstrip().lower()).split()
@@ -77,20 +77,30 @@ for i in range(len_path):
     i += 1
     P_pow[i, :, :] = np.matmul(P_pow[i-1, :, :], P)
 
-current_word = 'END'
-opt_seq_first, prob_first = search(initial, current_word, P_pow, P, \
+first_word = 'highwayman'
+opt_seq_first, prob_first = search(initial, first_word, P_pow, P, \
             len_path, word_encode, num_decode)
 
-end_word = 'END'
+sec_word = 'loved'
 initial_cur = {}
-initial_cur[current_word] = ''
+initial_cur[first_word] = ''
 
-opt_seq_second, prob_sec = search(initial_cur, end_word, P_pow, P, \
+opt_seq_second, prob_sec = search(initial_cur, sec_word, P_pow, P, \
             len_path, word_encode, num_decode)
 
-print(type(opt_seq_first), prob_first)
-print(type(opt_seq_second[1:]), prob_sec)
+third_word = 'END'
+initial_cur = {}
+initial_cur[sec_word] = ''
+
+opt_seq_third, prob_third = search(initial_cur, third_word, P_pow, P, \
+            len_path, word_encode, num_decode)
+
+print(opt_seq_first, prob_first)
+print(opt_seq_second[1:], prob_sec)
+print(opt_seq_third[1:], prob_third)
 opt_seq = opt_seq_first
 opt_seq.extend(opt_seq_second[1:])
-opt_prob = prob_first * prob_sec
+opt_seq.extend(opt_seq_third[1:])
+opt_prob = prob_first * prob_sec * prob_third
+
 print(opt_seq, opt_prob)
